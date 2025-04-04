@@ -6,3 +6,4 @@ joblib
 gunicorn
 Flask
 waitress
+flask-cors
