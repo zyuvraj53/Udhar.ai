@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Loan Prediction Form</title>
+  </head>
+  <body>
+    <h1>Loan Prediction</h1>
+    <form id="loan-form">
+      <div id="form-fields"></div>
+      <button type="submit">Predict</button>
+    </form>
+    <h3 id="result"></h3>
+
+    <script>
+      const featureNames = [
+        "Loan Amount",
+        "Funded Amount",
+        "Funded Amount Investor",
+        "Term",
+        "Batch Enrolled",
+        "Interest Rate",
+        "Grade",
+        "Sub Grade",
+        "Employment Duration",
+        "Home Ownership",
+        "Verification Status",
+        "Payment Plan",
+        "Debit to Income",
+        "Delinquency - two years",
+        "Inquires - six months",
+        "Open Account",
+        "Public Record",
+        "Revolving Balance",
+        "Revolving Utilities",
+        "Total Accounts",
+        "Initial List Status",
+        "Total Received Interest",
+        "Total Received Late Fee",
+        "Recoveries",
+        "Collection Recovery Fee",
+        "Collection 12 months Medical",
+        "Application Type",
+        "Last week Pay",
+        "Accounts Delinquent",
+        "Total Collection Amount",
+        "Total Current Balance",
+        "Total Revolving Credit Limit",
+      ];
+
+      const formFields = document.getElementById("form-fields");
+
+      featureNames.forEach((name, i) => {
+        const label = document.createElement("label");
+        label.innerText = `${name}: `;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = `feature-${i}`;
+        input.required = true;
+        label.appendChild(input);
+        formFields.appendChild(label);
+        formFields.appendChild(document.createElement("br"));
+      });
+
+      document
+        .getElementById("loan-form")
+        .addEventListener("submit", async e => {
+          e.preventDefault();
+          const inputs = document.querySelectorAll("input");
+          const features = Array.from(inputs).map(input => input.value);
+
+          const response = await fetch("https://udhar-ai.onrender.com/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ features }),
+          });
+
+          const data = await response.json();
+          const resultEl = document.getElementById("result");
+          if (data.prediction) {
+            resultEl.innerText = `Prediction: ${data.prediction} (${(
+              data.probability * 100
+            ).toFixed(2)}%)`;
+          } else {
+            resultEl.innerText = `Error: ${data.error}`;
+          }
+        });
+    </script>
+  </body>
+</html>
